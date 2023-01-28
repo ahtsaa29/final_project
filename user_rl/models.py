@@ -5,7 +5,7 @@ from userdetails.models import Designation
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, name, faces, password=None, password2 = None):
+    def create_user(self, email, name, password=None, password2 = None):
         if not email:
             raise ValueError('Users must have an email address')
         # if not faces:
@@ -22,7 +22,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, faces, password=None):
+    def create_superuser(self, email, name,password=None):
 
         user = self.create_user(
             email,
@@ -42,10 +42,10 @@ class HrmsUser(AbstractBaseUser):
         unique=True,
     )
     name = models.CharField(max_length=100)
-    phone = models.IntegerField()
-    address = models.CharField(max_length=100)
-    pan_no = models.BigIntegerField()
-    designation = models.ForeignKey(Designation, on_delete=models.CASCADE, default=None)
+    # phone = models.IntegerField()
+    # address = models.CharField(max_length=100)
+    # pan_no = models.BigIntegerField()
+    # designation = models.ForeignKey(Designation, on_delete=models.CASCADE, default=None)
 
     # faces = models.FileField(upload_to='/static')
     is_active = models.BooleanField(default=True)
