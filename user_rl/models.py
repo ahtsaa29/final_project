@@ -35,7 +35,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-class HrmsUser(AbstractBaseUser):
+class User(AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -87,5 +87,5 @@ class Attendance(models.Model):
     logout_time= models.TimeField()
     is_late = models.BooleanField()
     is_early = models.BooleanField()
-    user = models.ForeignKey(HrmsUser, on_delete=models.CASCADE, default=None)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 

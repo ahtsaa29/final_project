@@ -1,5 +1,5 @@
 from django.contrib import admin
-from user_rl.models import HrmsUser
+from user_rl.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Register your models here.
@@ -26,4 +26,4 @@ class UserModelAdmin(BaseUserAdmin):
 
 
 
-admin.site.register(HrmsUser, UserModelAdmin)
+admin.site.register(User, UserModelAdmin)

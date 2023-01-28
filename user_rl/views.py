@@ -50,7 +50,7 @@ class HrmsUserProfileView(APIView):
   renderer_classes = [UserRenderer]
   permission_classes = [IsAuthenticated]
   def get(self, request, format=None):
-    serializer = HrmsUserProfileSerializer(request.hrmsuser)
+    serializer = HrmsUserProfileSerializer(request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from user_rl.models import HrmsUser, Attendance
+from user_rl.models import User, Attendance
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -13,9 +13,9 @@ from rest_framework.response import Response
 class HrmsUserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'},write_only = True)
     class Meta:
-        model = HrmsUser
+        model = User
         fields = ['email','name','password','password2',]
-        read_only_fields = ('is_active', 'is_staff','hrmsuser_id')
+        read_only_fields = ('is_active', 'is_staff','user_id')
 
         # fields = ['email','name','password','password2','faces']
         extra_kwargs ={
@@ -38,18 +38,18 @@ class HrmsUserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validate_data):
         # faces= face_store('name')
         # return HrmsUser.objects.create_user(faces,**validate_data)
-        return HrmsUser.objects.create_user(**validate_data)
+        return User.objects.create_user(**validate_data)
 
 class HrmsUserLoginSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(max_length=255)
   class Meta:
-    model = HrmsUser
+    model = User
     fields = ['email', 'password','identified']
 
   @action(detail= True,method = ['get'])
   def attendance(self,request,pk=None):
     try:
-      hrmsuser = HrmsUser.objects.get(pk=pk)
+      hrmsuser = User.objects.get(pk=pk)
       atts = Attendance.objects.filter(hrmsuser= hrmsuser)
       atts_serializer = AttendanceSerializer(atts, many=True, context= {'request':request})
       return Response(atts_serializer.data)
@@ -59,7 +59,7 @@ class HrmsUserLoginSerializer(serializers.ModelSerializer):
 
 class HrmsUserProfileSerializer(serializers.ModelSerializer):
   class Meta:
-    model = HrmsUser
+    model = User
     fields = ['id', 'email', 'name']
 
 class AttendanceSerializer(serializers.ModelSerializer):
@@ -91,13 +91,13 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
 
   def validate(self, attrs):
     email = attrs.get('email')
-    if HrmsUser.objects.filter(email=email).exists():
-      hrmsuser = HrmsUser.objects.get(email = email)
+    if User.objects.filter(email=email).exists():
+      hrmsuser = User.objects.get(email = email)
       uid = urlsafe_base64_encode(force_bytes(hrmsuser.id))
       print('Encoded UID', uid)
       token = PasswordResetTokenGenerator().make_token(hrmsuser)
       print('Password Reset Token', token)
-      link = 'http://http://127.0.0.1:8000/api/user/reset/'+uid+'/'+token
+      link = 'http://127.0.0.1:8000/api/user/reset/'+uid+'/'+token
       print('Password Reset Link', link)
       # Send EMail
       body = 'Click Following Link to Reset Your Password '+link
@@ -126,7 +126,7 @@ class HrmsUserPasswordResetSerializer(serializers.Serializer):
       if password != password2:
         raise serializers.ValidationError("Password and Confirm Password doesn't match")
       id = smart_str(urlsafe_base64_decode(uid))
-      hrmsuser = HrmsUser.objects.get(id=id)
+      hrmsuser = User.objects.get(id=id)
       if not PasswordResetTokenGenerator().check_token(hrmsuser, token):
         raise serializers.ValidationError('Token is not Valid or Expired')
       hrmsuser.set_password(password)
