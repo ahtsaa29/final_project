@@ -38,18 +38,7 @@ class HrmsUserRegistrationView(APIView):
 
 class HrmsUserLoginView(APIView):
     renderer_classes = [UserRenderer]
-    @action(detail= False)
-    #def attendance(self,request,pk=None):
-      #return Response({"message":"ERROR"})
-      # try:
-      #   hrmsuser = User.objects.get(pk=pk)
-      #   print(hrmsuser)
-      #   atts = Attendance.objects.filter(hrmsuser= hrmsuser)
-      #   atts_serializer = AttendanceSerializer(atts, many=True, context= {'request':request})
-      #   return Response(atts_serializer.data)
-      # except Exception as e:
-      #   print(e)
-      #   return Response({'message':e})
+    # @action(detail= False)
       
 
 
