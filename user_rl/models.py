@@ -42,11 +42,10 @@ class User(AbstractBaseUser):
         unique=True,
     )
     name = models.CharField(max_length=100)
-    # phone = models.IntegerField()
-    # address = models.CharField(max_length=100)
-    # pan_no = models.BigIntegerField()
+    phone = models.IntegerField(null=True)
+    # address = models.CharField(max_length=100,null=True)
+    pan_no = models.BigIntegerField(null=True)
     # designation = models.ForeignKey(Designation, on_delete=models.CASCADE, default=None)
-
     # faces = models.FileField(upload_to='/static')
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -83,9 +82,8 @@ class User(AbstractBaseUser):
 
 class Attendance(models.Model):
     date = models.DateField()
-    login_time = models.TimeField()
-    logout_time= models.TimeField()
+    # login_time
     is_late = models.BooleanField()
     is_early = models.BooleanField()
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 

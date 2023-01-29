@@ -1,27 +1,33 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from user_rl.serializers import HrmsUserLoginSerializer,HrmsUserRegistrationSerializer,HrmsUserProfileSerializer,HrmsUserChangePasswordSerializer,SendPasswordResetEmailSerializer,HrmsUserPasswordResetSerializer
+from user_rl.serializers import HrmsUserLoginSerializer,HrmsUserRegistrationSerializer,HrmsUserProfileSerializer,HrmsUserChangePasswordSerializer,AttendanceSerializer,SendPasswordResetEmailSerializer,HrmsUserPasswordResetSerializer
 from django.contrib.auth import authenticate
 from user_rl.renderers import UserRenderer
+from user_rl.models import User,Attendance
+from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 # from face_recog.face_recognition import face_identify as fc
 # Create your views here.
+from datetime import datetime
 
 
 
 def get_tokens_for_user(hrmsuser):
     refresh = RefreshToken.for_user(hrmsuser)
-
+    time_stamp = datetime.now()
     return {
         'refresh': str(refresh),
         'access': str(refresh.access_token),
+        'time_stamp':str(time_stamp)
     }
 
 
 class HrmsUserRegistrationView(APIView):
     renderer_classes = [UserRenderer]
+    permission_classes = [IsAdminUser]
     def post(self, request,format=None):
         serializer = HrmsUserRegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -32,6 +38,21 @@ class HrmsUserRegistrationView(APIView):
 
 class HrmsUserLoginView(APIView):
     renderer_classes = [UserRenderer]
+    @action(detail= False)
+    #def attendance(self,request,pk=None):
+      #return Response({"message":"ERROR"})
+      # try:
+      #   hrmsuser = User.objects.get(pk=pk)
+      #   print(hrmsuser)
+      #   atts = Attendance.objects.filter(hrmsuser= hrmsuser)
+      #   atts_serializer = AttendanceSerializer(atts, many=True, context= {'request':request})
+      #   return Response(atts_serializer.data)
+      # except Exception as e:
+      #   print(e)
+      #   return Response({'message':e})
+      
+
+
     def post(self, request,format=None):
         serializer = HrmsUserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -46,14 +67,13 @@ class HrmsUserLoginView(APIView):
             return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
 
 
+
 class HrmsUserProfileView(APIView):
   renderer_classes = [UserRenderer]
   permission_classes = [IsAuthenticated]
   def get(self, request, format=None):
     serializer = HrmsUserProfileSerializer(request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 
 class HrmsUserChangePasswordView(APIView):
   renderer_classes = [UserRenderer]

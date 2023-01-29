@@ -6,16 +6,18 @@ from datetime import datetime
 
 
 class Company(models.Model):
+    # admin
     company_id = models.AutoField(primary_key=True)
     name= models.CharField(max_length=50)
-    phone = models.IntegerField()
+    phone = models.BigIntegerField()
     email = models.EmailField()
     address = models.CharField(max_length=100)
-    logo = models.ImageField(upload_to='uploads/logo', height_field=None, width_field=None, max_length=100)
+    logo = models.ImageField(upload_to='uploads/logo', height_field=None, width_field=None, max_length=100, null=True)
     pan_no = models.BigIntegerField()
     added_date = models.DateTimeField(default=datetime.now, editable=False)
 
 class Designation(models.Model):
+    # admin
     designation_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
     salary = models.DecimalField(max_digits=8, decimal_places=2,default=0)
@@ -47,7 +49,7 @@ class Payroll(models.Model):
     def __str__(self):
         return self.designation.name + "-" + self.salary
     
-class IssueType(models.Model):
+class ApplicationType(models.Model):
     issue_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
 
@@ -55,22 +57,16 @@ class IssueType(models.Model):
         return self.name
 
 class Application(models.Model):
+    # user le pathaune
     application_id = models.AutoField(primary_key=True)
-    apply_for = models.ForeignKey(IssueType, on_delete=models.CASCADE, default=None)
+    apply_for = models.ForeignKey(ApplicationType, on_delete=models.CASCADE, default=None)
     title = models.CharField(max_length=25)
     reason = models.TextField()
     date = models.DateTimeField(default=datetime.now, editable=False)
     for_days = models.IntegerField()
-
-class Issue(models.Model):
-    issue_id = models.AutoField(primary_key=True)
     STATUS = (
         ('Approved','Approved'),
         ('Declined','Declined'),
         ('Pending','Pending')
     )
-    # hrmsuser = models.ForeignKey(HrmsUser, on_delete=models.CASCADE, default=None)
-    issue = models.ManyToManyField(Application, default=None)
-    status = models.CharField(max_length=25, choices=STATUS, default=0)
-    def __str__(self):
-        return self.issue.name
+

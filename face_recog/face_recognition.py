@@ -4,8 +4,8 @@ from rest_framework import status
 
 
 
-face_cap = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-datasets = 'datasets'  
+face_cap = cv2.CascadeClassifier('face_recog/haarcascade_frontalface_default.xml')
+datasets = 'face_recog/datasets/'  
 video_cap = cv2.VideoCapture(0)
 size = 4
 

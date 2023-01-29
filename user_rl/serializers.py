@@ -3,7 +3,6 @@ from user_rl.models import User, Attendance
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from rest_framework.decorators import action
 from user_rl.utils import Util
 from rest_framework.response import Response
 # from face_recog.face_recognition import face_store
@@ -11,6 +10,8 @@ from rest_framework.response import Response
 
 
 class HrmsUserRegistrationSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField()
+
     password2 = serializers.CharField(style={'input_type':'password'},write_only = True)
     class Meta:
         model = User
@@ -41,21 +42,15 @@ class HrmsUserRegistrationSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validate_data)
 
 class HrmsUserLoginSerializer(serializers.ModelSerializer):
+  # time_stamp = serializers.SerializerMethodField()
   email = serializers.EmailField(max_length=255)
   class Meta:
     model = User
     fields = ['email', 'password','identified']
 
-  @action(detail= True,method = ['get'])
-  def attendance(self,request,pk=None):
-    try:
-      hrmsuser = User.objects.get(pk=pk)
-      atts = Attendance.objects.filter(hrmsuser= hrmsuser)
-      atts_serializer = AttendanceSerializer(atts, many=True, context= {'request':request})
-      return Response(atts_serializer.data)
-    except Exception as e:
-      print(e)
-      return Response({'message':e})
+  # def get_time_stamp(obj):
+  #   print(obj)
+  #   return obj.last_login
 
 class HrmsUserProfileSerializer(serializers.ModelSerializer):
   class Meta:
