@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'company', CompanyViewSet)
 router.register(r'payroll', PayrollViewSet)
 router.register(r'application', ApplicationViewSet)
-router.register(r'issuetype', ApplicationTypeViewSet)
+router.register(r'applicationtype', ApplicationTypeViewSet)
 router.register(r'designation', DesignationViewSet)
 
 urlpatterns = [

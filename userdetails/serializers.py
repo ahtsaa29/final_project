@@ -8,6 +8,10 @@ class CompanySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Company
         fields= "__all__"
+    def validate_phone(self, value):
+        if value < 9000000000 or value > 9999999999:
+            raise serializers.ValidationError('wrong format')
+        return value
 
 class DesignationSerializer (serializers.HyperlinkedModelSerializer):
     designation_id = serializers.ReadOnlyField()
@@ -35,7 +39,12 @@ class ApplicationTypeSerializer (serializers.HyperlinkedModelSerializer):
 
 class ApplicationSerializer (serializers.HyperlinkedModelSerializer):
     Application_id = serializers.ReadOnlyField()
-
+    def validate_for_days(self, value):
+        if value < 1:
+            raise serializers.ValidationError('Invalid Number of Days')
+        elif value > 4:
+            raise serializers.ValidationError('For more than 4 days of leave, please contact the Office directly. Thank you')
+        return value
     class Meta:
         model = Application
         fields= "__all__"

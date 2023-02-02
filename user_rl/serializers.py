@@ -10,7 +10,6 @@ from rest_framework.response import Response
 
 
 class HrmsUserRegistrationSerializer(serializers.ModelSerializer):
-    user_id = serializers.ReadOnlyField()
 
     password2 = serializers.CharField(style={'input_type':'password'},write_only = True)
     class Meta:
@@ -130,3 +129,6 @@ class HrmsUserPasswordResetSerializer(serializers.Serializer):
     except DjangoUnicodeDecodeError as identifier:
       PasswordResetTokenGenerator().check_token(hrmsuser, token)
       raise serializers.ValidationError('Token is not Valid or Expired')
+
+
+

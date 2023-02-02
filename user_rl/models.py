@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-from userdetails.models import Designation
+from userdetails.models import Designation, Payroll
 
 
 # Create your models here.
@@ -36,6 +36,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+    user_id = id
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -43,15 +44,17 @@ class User(AbstractBaseUser):
     )
     name = models.CharField(max_length=100)
     phone = models.IntegerField(null=True)
-    # address = models.CharField(max_length=100,null=True)
+    address = models.CharField(max_length=100,null=True)
     pan_no = models.BigIntegerField(null=True)
-    # designation = models.ForeignKey(Designation, on_delete=models.CASCADE, default=None)
+    designation = models.ForeignKey(Designation, on_delete=models.CASCADE, default=None, null=True)
+    payroll = models.OneToOneField(Payroll,on_delete=models.CASCADE, default=None, null=True)
     # faces = models.FileField(upload_to='/static')
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     identified = models.BooleanField(default=False)
+
 
     objects = CustomUserManager()
 
@@ -81,9 +84,9 @@ class User(AbstractBaseUser):
 
 
 class Attendance(models.Model):
-    date = models.DateField()
-    # login_time
+    user = models.ForeignKey(User,on_delete=models.CASCADE, default=None)
+    time_stamp = models.DateTimeField(default=None)
     is_late = models.BooleanField()
     is_early = models.BooleanField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    image = models.ImageField()
 

@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-# from user_rl.renderers import UserRenderer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from userdetails.models import Company, Payroll, Application, ApplicationType, Designation
 from rest_framework import viewsets, serializers
@@ -25,10 +24,15 @@ class CompanyViewSet(viewsets.ModelViewSet):
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers= headers
         )
-    from rest_framework.decorators import action
-    @action(detail= False)
-    def attendance(self,request,pk=None):
-      return Response({"message":"ERROR"})
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
+
+    # from rest_framework.decorators import action
+    # @action(detail= False)
+    # def attendance(self,request,pk=None):
+    #   return Response({"message":"ERROR"})
       # try:
       #   hrmsuser = User.objects.get(pk=pk)
       #   print(hrmsuser)
@@ -42,17 +46,19 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
 class PayrollViewSet(viewsets.ModelViewSet):
     queryset = Payroll.objects.all()
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     # custom permission
     serializer_class = PayrollSerializer
-    def create(self,request, *args, **kwargs):
-        pass
-    def update(self,request, *args, **kwargs):
-        pass
-    def destroy(self,request, *args, **kwargs):
-        pass
-    def get(self,request, *args, **kwargs):
-        pass
+    # def create(self,request, *args, **kwargs):
+    #     pass
+    # def update(self,request, *args, **kwargs):
+    #     pass
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
+    # def get(self,request, *args, **kwargs):
+    #     pass
 
 
 
@@ -62,17 +68,27 @@ class ApplicationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     # custom permission
     serializer_class = ApplicationSerializer
-
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
 
 
 class ApplicationTypeViewSet(viewsets.ModelViewSet):
     queryset = ApplicationType.objects.all()
     permission_classes = [IsAdminUser]
     serializer_class = ApplicationTypeSerializer
-
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
 
 
 class DesignationViewSet(viewsets.ModelViewSet):
     queryset = Designation.objects.all()
     permission_classes = [IsAdminUser]
     serializer_class = DesignationSerializer
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)

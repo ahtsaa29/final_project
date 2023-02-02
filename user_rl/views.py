@@ -4,16 +4,17 @@ from rest_framework.views import APIView
 from user_rl.serializers import HrmsUserLoginSerializer,HrmsUserRegistrationSerializer,HrmsUserProfileSerializer,HrmsUserChangePasswordSerializer,AttendanceSerializer,SendPasswordResetEmailSerializer,HrmsUserPasswordResetSerializer
 from django.contrib.auth import authenticate
 from user_rl.renderers import UserRenderer
-from user_rl.models import User,Attendance
-from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-# from face_recog.face_recognition import face_identify as fc
-# Create your views here.
 from datetime import datetime
+from django.shortcuts import render
+# from face_recog.face_recognition import face_identify as fc
 
 
+
+def start(request):
+  return render(request,'index.html')
 
 def get_tokens_for_user(hrmsuser):
     refresh = RefreshToken.for_user(hrmsuser)
@@ -85,3 +86,12 @@ class HrmsUserPasswordResetView(APIView):
     serializer = HrmsUserPasswordResetSerializer(data=request.data, context={'uid':uid, 'token':token})
     serializer.is_valid(raise_exception=True)
     return Response({'message':'Password Reset Successfully'}, status=status.HTTP_200_OK)
+
+
+# class HrmsUserDelete(APIView):
+#   renderer_classes = [UserRenderer]
+#   # permission_classes = [IsAdminUser]
+#   def destroy(self, request, *args, **kwargs):
+#     instance = self.get_object()
+#     self.perform_destroy(instance)
+#     return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
