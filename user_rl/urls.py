@@ -1,5 +1,5 @@
 from django.urls import path
-from user_rl.views import start,HrmsUserRegistrationView, HrmsUserLoginView, HrmsUserProfileView, HrmsUserChangePasswordView, HrmsUserPasswordResetView, SendPasswordResetEmailView
+from user_rl.views import HrmsUserRegistrationView, HrmsUserLoginView, HrmsUserProfileView, HrmsUserChangePasswordView, HrmsUserPasswordResetView, SendPasswordResetEmailView
 
 urlpatterns = [
     # path('home/',start, name="Home page"),

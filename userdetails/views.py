@@ -29,44 +29,23 @@ class CompanyViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
 
-    # from rest_framework.decorators import action
-    # @action(detail= False)
-    # def attendance(self,request,pk=None):
-    #   return Response({"message":"ERROR"})
-      # try:
-      #   hrmsuser = User.objects.get(pk=pk)
-      #   print(hrmsuser)
-      #   atts = Attendance.objects.filter(hrmsuser= hrmsuser)
-      #   atts_serializer = AttendanceSerializer(atts, many=True, context= {'request':request})
-      #   return Response(atts_serializer.data)
-      # except Exception as e:
-      #   print(e)
-      #   return Response({'message':e})
-# company done nachu
 
 class PayrollViewSet(viewsets.ModelViewSet):
     queryset = Payroll.objects.all()
     permission_classes = [IsAuthenticated]
-    # custom permission
-    serializer_class = PayrollSerializer
-    # def create(self,request, *args, **kwargs):
-    #     pass
-    # def update(self,request, *args, **kwargs):
-    #     pass
+    http_method_names = ['get']
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
-    # def get(self,request, *args, **kwargs):
-    #     pass
+
 
 
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
-    permission_classes = [IsAdminUser]
-    # custom permission
+    permission_classes = [IsAuthenticated]
     serializer_class = ApplicationSerializer
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

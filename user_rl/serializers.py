@@ -132,3 +132,7 @@ class HrmsUserPasswordResetSerializer(serializers.Serializer):
 
 
 
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = '__all__'

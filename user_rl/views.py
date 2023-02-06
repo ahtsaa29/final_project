@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from user_rl.serializers import HrmsUserLoginSerializer,HrmsUserRegistrationSerializer,HrmsUserProfileSerializer,HrmsUserChangePasswordSerializer,AttendanceSerializer,SendPasswordResetEmailSerializer,HrmsUserPasswordResetSerializer
 from django.contrib.auth import authenticate
@@ -10,11 +10,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from datetime import datetime
 from django.shortcuts import render
 # from face_recog.face_recognition import face_identify as fc
+import cv2, numpy, os
+
+from user_rl.models import Attendance
 
 
-
-def start(request):
-  return render(request,'index.html')
 
 def get_tokens_for_user(hrmsuser):
     refresh = RefreshToken.for_user(hrmsuser)
@@ -25,6 +25,34 @@ def get_tokens_for_user(hrmsuser):
         'time_stamp':str(time_stamp)
     }
 
+def register_dataset(hrmsuser):
+  face_cap = cv2.CascadeClassifier('face_recognition/haarcascade_frontalface_default.xml')
+  datasets = 'face_recognition/datasets/'  
+  video_cap = cv2.VideoCapture(0)
+  size = 4
+  path = os.path.join(datasets, hrmsuser)
+  if not os.path.isdir(path):
+    os.mkdir(path)
+  (width, height) = (130, 100)   
+  count = 0
+  while count < 30: 
+      (_, cap_data) = video_cap.read()
+      col = cv2.cvtColor(cap_data, cv2.COLOR_BGR2GRAY)
+      faces = face_cap.detectMultiScale(col, 1.3, 4)
+      for (x, y, w, h) in faces:
+          cv2.rectangle(cap_data, (x, y), (x + w, y + h), (255, 0, 0), 2)
+          face = col[y:y + h, x:x + w]
+          face_resize = cv2.resize(face, (width, height))
+          cv2.imwrite('% s/% s.png' % (path, count), face_resize)
+      count += 1
+      
+      cv2.imshow('Reading your image', cap_data)
+      if cv2.waitKey(100) == ord("z"):
+          break
+
+  return Response({
+      'message': "Your face is stored for future Logins"
+  }, status=status.HTTP_200_OK)
 
 class HrmsUserRegistrationView(APIView):
     renderer_classes = [UserRenderer]
@@ -34,15 +62,15 @@ class HrmsUserRegistrationView(APIView):
         serializer.is_valid(raise_exception=True)
         hrmsuser = serializer.save()
         token = get_tokens_for_user(hrmsuser)
-        return Response({'token': token,'message':'registration success'}, status= status.HTTP_201_CREATED)
+        face_dataset = register_dataset(hrmsuser)
+        data ={'dataset':face_dataset,'token': token,'message':'registration success','location':'register_dataset'}
+        return Response(data, status= status.HTTP_201_CREATED)
+        
 
 
 class HrmsUserLoginView(APIView):
     renderer_classes = [UserRenderer]
     # @action(detail= False)
-      
-
-
     def post(self, request,format=None):
         serializer = HrmsUserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -95,3 +123,9 @@ class HrmsUserPasswordResetView(APIView):
 #     instance = self.get_object()
 #     self.perform_destroy(instance)
 #     return Response({"message":"Succesfully deleted item"},status=status.HTTP_204_NO_CONTENT)
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+  
